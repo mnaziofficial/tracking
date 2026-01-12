@@ -15,6 +15,5 @@ bootstrap/cache/*
 .vscode
 .idea
 npm-debug.log
-package-lock.json
-composer.lock
+tests/
 tests/
