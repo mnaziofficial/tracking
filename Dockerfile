@@ -46,4 +46,4 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 EXPOSE 8000
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["php", "-S", "0.0.0.0:${PORT:-8000}", "-t", "public"]
+CMD ["bash", "-c", "php -S 0.0.0.0:${PORT:-8000} -t public"]

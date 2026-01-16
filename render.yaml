@@ -3,14 +3,16 @@ services:
     name: fuel-tracking-system
     runtime: php
     plan: free
-    buildCommand: npm install && npm run build && bash render-build.sh
-    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
+    buildCommand: composer install --no-interaction --optimize-autoloader && npm install && npm run build && bash render-build.sh
+    startCommand: bash -c 'php -S 0.0.0.0:$PORT -t public'
     healthCheckPath: /
     envVars:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: "false"
+      - key: APP_KEY
+        value: base64:BmmZ993rARtI3Qb2Fs8X0Bh3gLE+rUI1dfe434LMqxs=
       - key: APP_URL
         fromService:
           type: web
@@ -37,6 +39,12 @@ services:
           type: pserv
           name: mysql
           property: password
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
   
   - type: pserv
     name: mysql
