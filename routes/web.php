@@ -11,9 +11,6 @@ use App\Http\Controllers\PumpShiftController;
 use App\Http\Controllers\GovernmentCapController;
 use App\Http\Controllers\CapController;
 
-
-
-
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard');

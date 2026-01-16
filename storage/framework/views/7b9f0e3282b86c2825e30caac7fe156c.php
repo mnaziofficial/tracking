@@ -168,8 +168,8 @@
             <p>Secure fuel sales monitoring & management</p>
 
             <div class="actions">
-                <a href="{{ route('login') }}" class="btn btn-login">Login</a>
-                <a href="{{ route('register') }}" class="btn btn-register">Register</a>
+                <a href="<?php echo e(route('login')); ?>" class="btn btn-login">Login</a>
+                <a href="<?php echo e(route('register')); ?>" class="btn btn-register">Register</a>
             </div>
         </div>
     </div>
@@ -178,3 +178,4 @@
 
 </body>
 </html>
+<?php /**PATH C:\laravel\tracking\resources\views/welcome.blade.php ENDPATH**/ ?>
