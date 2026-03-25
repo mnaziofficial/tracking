@@ -2,15 +2,28 @@ FROM php:8.4-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git unzip curl libzip-dev zip libpng-dev libonig-dev libxml2-dev \
-    libjpeg62-turbo-dev libfreetype6-dev \
+    git \
+    unzip \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install and configure PHP extensions
-RUN docker-php-ext-configure gd \
-    --with-freetype=/usr/include/freetype2 \
-    --with-jpeg=/usr/include && \
-    docker-php-ext-install -j$(nproc) pdo_mysql pdo zip gd mbstring xml
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
+    && docker-php-ext-install -j$(nproc) \
+        pdo \
+        pdo_mysql \
+        zip \
+        gd \
+        mbstring \
+        xml \
+        bcmath \
+        opcache
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -18,14 +31,26 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy project files
+# Copy composer files first
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies
+RUN composer install \
+    --no-interaction \
+    --no-dev \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-scripts
+
+# Copy the rest of the project
 COPY . .
 
-# Install dependencies
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader || \
-    composer install --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
+# Run post-install scripts
+RUN composer run-script post-autoload-dump || true
+
 # Set permissions
-RUN chmod -R 775 storage bootstrap/cache
+RUN chmod -R 755 storage bootstrap/cache && \
+    chown -R www-data:www-data storage bootstrap/cache
 
 # Expose port
 EXPOSE 8000
